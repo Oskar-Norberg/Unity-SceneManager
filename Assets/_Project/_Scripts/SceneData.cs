@@ -2,8 +2,8 @@ using Eflatun.SceneReference;
 
 public struct SceneData
 {
-    public SceneReference scene;
+    public SceneReference Scene;
 
-    public bool setActive;
-    public bool reloadIfActive;
+    public bool SetActive;
+    public bool ReloadIfActive;
 }
