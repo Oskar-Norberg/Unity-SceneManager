@@ -25,6 +25,7 @@ namespace ringo.SceneSystem
         
         public void LoadScene(SceneGroup sceneGroup)
         {
+            // TODO: These might happen concurrently. Fix.
             UnloadScenes(sceneGroup);
             LoadSceneGroup(sceneGroup);
 
