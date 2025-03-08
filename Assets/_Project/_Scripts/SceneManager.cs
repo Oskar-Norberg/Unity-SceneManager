@@ -60,14 +60,14 @@ namespace ringo.SceneSystem
             return sceneNames;
         }
 
-        private void LoadSceneGroup(SceneGroup sceneGroup)
+        private async void LoadSceneGroup(SceneGroup sceneGroup)
         {
             foreach (var sceneData in sceneGroup.Scenes)
             {
-                UnityEngine.SceneManagement.SceneManager.LoadScene(sceneData.Scene.Name, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+                await UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneData.Scene.Name, UnityEngine.SceneManagement.LoadSceneMode.Additive);
                 
                 if (sceneData.SetActive)
-                    UnityEngine.SceneManagement.SceneManager.SetActiveScene(UnityEngine.SceneManagement.SceneManager.GetSceneByName(sceneData.Scene.Name));
+                    UnityEngine.SceneManagement.SceneManager.SetActiveScene(sceneData.Scene.LoadedScene);
             }
         }
     }
