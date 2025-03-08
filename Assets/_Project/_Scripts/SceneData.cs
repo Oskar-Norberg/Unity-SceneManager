@@ -1,9 +1,12 @@
 using Eflatun.SceneReference;
 
-public struct SceneData
+namespace ringo.SceneSystem
 {
-    public SceneReference Scene;
+    public struct SceneData
+    {
+        public SceneReference Scene;
 
-    public bool SetActive;
-    public bool ReloadIfActive;
+        public bool SetActive;
+        public bool ReloadIfActive;
+    }
 }
