@@ -62,6 +62,9 @@ namespace ringo.SceneSystem
         {
             foreach (var sceneData in sceneGroup.Scenes)
             {
+                if (UnityEngine.SceneManagement.SceneManager.GetSceneByName(sceneData.Scene.Name).isLoaded)
+                    continue;
+                
                 await UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneData.Scene.Name, UnityEngine.SceneManagement.LoadSceneMode.Additive);
                 
                 if (sceneData.SetActive)
