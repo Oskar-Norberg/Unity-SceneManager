@@ -41,10 +41,8 @@ namespace ringo.SceneSystem
             {
                 var sceneData = newSceneGroup.Scenes.Find(x => x.Scene.Name == scene);
                 
-                if (sceneData is { ReloadIfActive: true })
-                {
+                if (sceneData.Scene == null || sceneData.ReloadIfActive)
                     UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(scene);
-                }
             }
         }
 
