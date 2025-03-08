@@ -7,6 +7,7 @@ namespace ringo.SceneSystem
     {
         public static void LoadSceneGroup(SceneGroup sceneGroup)
         {
+            // TODO: It seems the first loaded scene is not unloaded. Fix.
             // TODO: These might happen concurrently. Fix.
             UnloadScenes(sceneGroup);
             LoadScenesInGroup(sceneGroup);

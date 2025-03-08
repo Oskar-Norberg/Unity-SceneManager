@@ -6,7 +6,7 @@ namespace ringo.SceneSystem.Editor
 {
     public class SceneGroupPlayer : EditorWindow
     {
-        private static SceneGroup _sceneGroupToPlay;
+        private SceneGroup _sceneGroupToPlay;
         
         [MenuItem("Testing/Scene Group Player")]
         public static void ShowWindow()
@@ -37,6 +37,9 @@ namespace ringo.SceneSystem.Editor
 
         private void PlaySceneGroupButton()
         {
+            if (Application.isPlaying)
+                return;
+            
             EditorGUILayout.BeginHorizontal();
             
             if (GUILayout.Button("Play Scene Group"))
@@ -53,26 +56,43 @@ namespace ringo.SceneSystem.Editor
                 return;
             }
             
+            EditorPrefs.SetBool("DoOverrideScene", true);
             EditorApplication.EnterPlaymode();
         }
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void OnBeforeSceneLoadRuntimeMethod()
         {
+            if (!ShouldOverrideScene())
+                return;
+
+            SetShouldOverrideScene(false);
+            
             var sceneGroupPath = EditorPrefs.GetString("SceneGroupToPlay", string.Empty);
+            var sceneGroupToPlay = default(SceneGroup);
             
             if (!string.IsNullOrEmpty(sceneGroupPath))
             {
-                _sceneGroupToPlay = AssetDatabase.LoadAssetAtPath<SceneGroup>(sceneGroupPath);
+                sceneGroupToPlay = AssetDatabase.LoadAssetAtPath<SceneGroup>(sceneGroupPath);
             }
             
-            if (_sceneGroupToPlay == null)
+            if (sceneGroupToPlay == null)
             {
                 Debug.LogWarning("Scene Group is null");
                 return;
             }
 
-            SceneManager.LoadSceneGroup(_sceneGroupToPlay);
+            SceneManager.LoadSceneGroup(sceneGroupToPlay);
+        }
+
+        private static bool ShouldOverrideScene()
+        {
+            return EditorPrefs.GetBool("DoOverrideScene", false);
+        }
+        
+        private static void SetShouldOverrideScene(bool value)
+        {
+            EditorPrefs.SetBool("DoOverrideScene", value);
         }
     }
 }
