@@ -1,19 +1,19 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ringo.SceneSystem
 {
     public static class SceneManager
     {
-        public static void LoadSceneGroup(SceneGroup sceneGroup)
+        public static async void LoadSceneGroup(SceneGroup sceneGroup)
         {
             // TODO: It seems the first loaded scene is not unloaded. Fix.
-            // TODO: These might happen concurrently. Fix.
-            UnloadScenes(sceneGroup);
-            LoadScenesInGroup(sceneGroup);
+            await UnloadScenes(sceneGroup);
+            await LoadScenesInGroup(sceneGroup);
         }
 
-        private static void UnloadScenes(SceneGroup newSceneGroup)
+        private static async Task UnloadScenes(SceneGroup newSceneGroup)
         {
             List<string> currentSceneNames = GetCurrentSceneNames();
             
@@ -23,7 +23,7 @@ namespace ringo.SceneSystem
                 var sceneData = newSceneGroup.Scenes.Find(x => x.Scene.Name == scene);
                 
                 if (sceneData.Scene == null || sceneData.ReloadIfActive)
-                    UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(scene);
+                    await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(scene);
             }
         }
 
@@ -39,7 +39,7 @@ namespace ringo.SceneSystem
             return sceneNames;
         }
 
-        private static async void LoadScenesInGroup(SceneGroup sceneGroup)
+        private static async Task LoadScenesInGroup(SceneGroup sceneGroup)
         {
             foreach (var sceneData in sceneGroup.Scenes)
             {
