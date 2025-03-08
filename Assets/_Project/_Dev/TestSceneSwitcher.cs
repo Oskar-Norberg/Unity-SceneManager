@@ -14,19 +14,19 @@ public class TestSceneSwitcher : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            SceneManager.LoadScene(sceneGroups[0]);
+            SceneManager.LoadSceneGroup(sceneGroups[0]);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            SceneManager.LoadScene(sceneGroups[1]);
+            SceneManager.LoadSceneGroup(sceneGroups[1]);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            SceneManager.LoadScene(sceneGroups[2]);
+            SceneManager.LoadSceneGroup(sceneGroups[2]);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            SceneManager.LoadScene(sceneGroups[3]);
+            SceneManager.LoadSceneGroup(sceneGroups[3]);
         }
     }
 }

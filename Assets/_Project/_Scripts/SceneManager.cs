@@ -5,11 +5,11 @@ namespace ringo.SceneSystem
 {
     public static class SceneManager
     {
-        public static void LoadScene(SceneGroup sceneGroup)
+        public static void LoadSceneGroup(SceneGroup sceneGroup)
         {
             // TODO: These might happen concurrently. Fix.
             UnloadScenes(sceneGroup);
-            LoadSceneGroup(sceneGroup);
+            LoadScenesInGroup(sceneGroup);
         }
 
         private static void UnloadScenes(SceneGroup newSceneGroup)
@@ -38,7 +38,7 @@ namespace ringo.SceneSystem
             return sceneNames;
         }
 
-        private static async void LoadSceneGroup(SceneGroup sceneGroup)
+        private static async void LoadScenesInGroup(SceneGroup sceneGroup)
         {
             foreach (var sceneData in sceneGroup.Scenes)
             {
