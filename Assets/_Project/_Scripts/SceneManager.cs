@@ -1,43 +1,22 @@
 using System.Collections.Generic;
-using ringo.SceneSystem.Helpers;
 using UnityEngine;
 
 namespace ringo.SceneSystem
 {
-    public class SceneManager : PersistentSingleton<SceneManager>
+    public static class SceneManager
     {
-        [SerializeField] private SceneGroup initialSceneGroup;
-        
-        private SceneGroup _currentSceneGroup;
-
-        protected override void Awake()
-        {
-            base.Awake();
-            
-            if (initialSceneGroup == null)
-            {
-                Debug.LogError("Initial Scene Group is not set in SceneManager");
-                return;
-            }
-            
-            LoadScene(initialSceneGroup);
-        }
-        
-        public void LoadScene(SceneGroup sceneGroup)
+        public static void LoadScene(SceneGroup sceneGroup)
         {
             // TODO: These might happen concurrently. Fix.
             UnloadScenes(sceneGroup);
             LoadSceneGroup(sceneGroup);
-
-            _currentSceneGroup = sceneGroup;
         }
 
-        private void UnloadScenes(SceneGroup newSceneGroup)
+        private static void UnloadScenes(SceneGroup newSceneGroup)
         {
             List<string> currentSceneNames = GetCurrentSceneNames();
             
             // loop through all old scenes, if it's not in the new scene list and not marked as ReloadIfActive, unload it
-
             foreach (var scene in currentSceneNames)
             {
                 var sceneData = newSceneGroup.Scenes.Find(x => x.Scene.Name == scene);
@@ -47,7 +26,7 @@ namespace ringo.SceneSystem
             }
         }
 
-        private List<string> GetCurrentSceneNames()
+        private static List<string> GetCurrentSceneNames()
         {
             List<string> sceneNames = new List<string>();
             int sceneCount = UnityEngine.SceneManagement.SceneManager.sceneCount;
@@ -59,7 +38,7 @@ namespace ringo.SceneSystem
             return sceneNames;
         }
 
-        private async void LoadSceneGroup(SceneGroup sceneGroup)
+        private static async void LoadSceneGroup(SceneGroup sceneGroup)
         {
             foreach (var sceneData in sceneGroup.Scenes)
             {
