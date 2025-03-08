@@ -6,9 +6,9 @@ namespace ringo.SceneSystem
 {
     public static class SceneManager
     {
+        // TODO: Lock function to prevent multiple calls at the same time.
         public static async void LoadSceneGroup(SceneGroup sceneGroup)
         {
-            // TODO: It seems the first loaded scene is not unloaded. Fix.
             await UnloadScenes(sceneGroup);
             await LoadScenesInGroup(sceneGroup);
         }
