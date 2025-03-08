@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ringo.SceneSystem
 {
-    public class SceneManager : Singleton<SceneManager>
+    public class SceneManager : PersistentSingleton<SceneManager>
     {
         [SerializeField] private SceneGroup initialSceneGroup;
         
