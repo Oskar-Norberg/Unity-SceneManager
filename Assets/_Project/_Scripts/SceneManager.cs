@@ -21,26 +21,19 @@ namespace ringo.SceneSystem
             foreach (var scene in currentSceneNames)
             {
                 var sceneData = newSceneGroup.Scenes.Find(x => x.Scene.Name == scene);
+
+                if (UnityEngine.SceneManagement.SceneManager.sceneCount == 1)
+                    return;
                 
                 if (sceneData.Scene == null || sceneData.ReloadIfActive)
                     await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(scene);
             }
         }
 
-        private static List<string> GetCurrentSceneNames()
-        {
-            List<string> sceneNames = new List<string>();
-            int sceneCount = UnityEngine.SceneManagement.SceneManager.sceneCount;
-            for (int i = 0; i < sceneCount; i++)
-            {
-                sceneNames.Add(UnityEngine.SceneManagement.SceneManager.GetSceneAt(i).name);
-            }
-
-            return sceneNames;
-        }
-
+        // TODO: Smelly function, refactor.
         private static async Task LoadScenesInGroup(SceneGroup sceneGroup)
         {
+            // Load all scenes from SceneGroup
             foreach (var sceneData in sceneGroup.Scenes)
             {
                 if (UnityEngine.SceneManagement.SceneManager.GetSceneByName(sceneData.Scene.Name).isLoaded)
@@ -51,6 +44,25 @@ namespace ringo.SceneSystem
                 if (sceneData.SetActive)
                     UnityEngine.SceneManagement.SceneManager.SetActiveScene(sceneData.Scene.LoadedScene);
             }
+
+            // Remove if there is any scene that shouldn't be loaded.
+            foreach (var sceneName in GetCurrentSceneNames())
+            {
+                if (sceneGroup.Scenes.Find(x => x.Scene.Name == sceneName).Scene == null)
+                    await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(sceneName);
+            }
+        }
+        
+        private static List<string> GetCurrentSceneNames()
+        {
+            List<string> sceneNames = new List<string>();
+            int sceneCount = UnityEngine.SceneManagement.SceneManager.sceneCount;
+            for (int i = 0; i < sceneCount; i++)
+            {
+                sceneNames.Add(UnityEngine.SceneManagement.SceneManager.GetSceneAt(i).name);
+            }
+
+            return sceneNames;
         }
     }
 }
