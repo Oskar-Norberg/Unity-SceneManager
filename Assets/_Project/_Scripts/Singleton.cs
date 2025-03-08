@@ -1,45 +1,48 @@
 using UnityEngine;
 
-public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+namespace ringo.SceneSystem.Helpers
 {
-    public static T Instance
+    public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {
-        get
+        public static T Instance
         {
-            if (_instance == null)
+            get
             {
-                Debug.LogWarning("Instance of " + typeof(T).Name + " is null");
+                if (_instance == null)
+                {
+                    Debug.LogWarning("Instance of " + typeof(T).Name + " is null");
+                }
+
+                return _instance;
             }
-            
-            return _instance;
         }
-    }
 
-    protected static T _instance;
+        protected static T _instance;
 
-    protected virtual void Awake()
-    {
-        if (_instance != null)
+        protected virtual void Awake()
         {
-            Destroy(gameObject);
-            return;
+            if (_instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            _instance = this as T;
         }
-        
-        _instance = this as T;
+
+        protected void OnApplicationQuit()
+        {
+            _instance = null;
+            Destroy(gameObject);
+        }
     }
 
-    protected void OnApplicationQuit()
+    public abstract class PersistentSingleton<T> : Singleton<T> where T : MonoBehaviour
     {
-        _instance = null;
-        Destroy(gameObject);
-    }
-}
-
-public abstract class PersistentSingleton<T> : Singleton<T> where T : MonoBehaviour
-{
-    protected override void Awake()
-    {
-        base.Awake();
-        DontDestroyOnLoad(gameObject);
+        protected override void Awake()
+        {
+            base.Awake();
+            DontDestroyOnLoad(gameObject);
+        }
     }
 }
