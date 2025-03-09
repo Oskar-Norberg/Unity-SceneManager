@@ -32,7 +32,9 @@ namespace ringo.SceneSystem
             
             if (leftOverScene)
                 await UnloadLeftOverScenes(sceneDatas);
-
+            
+            // TODO: Consider calling Resources.UnloadUnusedAssets() here.
+            
             _isSceneLoading = false;
             
             OnSceneLoadingFinished?.Invoke();
