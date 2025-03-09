@@ -88,8 +88,6 @@ namespace ringo.SceneSystem.Editor
 
         private static async void LoadSceneGroup(SceneGroup sceneGroup)
         {
-            await UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneGroup.Scenes[0].Scene.Name);
-            
             await SceneManager.LoadSceneGroup(sceneGroup);
         }
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ringo.SceneSystem
 {
@@ -28,12 +29,11 @@ namespace ringo.SceneSystem
             List<SceneData> sceneDatas = new(sceneGroup.Scenes);
             
             bool leftOverScene = await UnloadScenes(sceneDatas);
-            await LoadScenesInGroup(sceneDatas);
             
             if (leftOverScene)
-                await UnloadLeftOverScenes(sceneDatas);
-            
-            // TODO: Consider calling Resources.UnloadUnusedAssets() here.
+                await LoadFirstSceneSingle(sceneDatas);
+
+            await LoadScenes(sceneGroup);
             
             _isSceneLoading = false;
             
@@ -42,50 +42,57 @@ namespace ringo.SceneSystem
         }
 
         /**
-         * <summary>Unloads scenes not in sceneData list.</summary>
-         * <returns>Returns whether there were any left-over scenes, because unity always needs to have at least one scene loaded at all times.</returns>
+         * <summary>Unloads scenes not in sceneDatas</summary>
+         * <returns>Whether there is any left-over scene.</returns>
          */
         private static async Task<bool> UnloadScenes(List<SceneData> sceneDatas)
         {
             List<string> currentSceneNames = GetCurrentSceneNames();
-            
-            // loop through all old scenes, if it's not in the new scene list and not marked as ReloadIfActive, unload it
-            foreach (var scene in currentSceneNames)
-            {
-                var sceneData = sceneDatas.Find(x => x.Scene.Name == scene);
 
+            foreach (var sceneName in currentSceneNames)
+            {
+                var sceneData = sceneDatas.Find(sd => sd.Scene.Name == sceneName);
+                
                 if (UnityEngine.SceneManagement.SceneManager.sceneCount == 1)
                     return true;
-                
-                if (sceneData.Scene == null || sceneData.ReloadIfActive)
-                    await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(scene);
+
+                if (sceneData.Scene == null)
+                    await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(sceneName);
+                else if (sceneData.ReloadIfActive)
+                    await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(sceneName);
             }
 
             return false;
         }
-
-        private static async Task LoadScenesInGroup(List<SceneData> sceneDatas)
+        
+        private static async Task LoadScene(string sceneName, LoadSceneMode loadSceneMode)
         {
-            // Load all scenes from SceneGroup
-            foreach (var sceneData in sceneDatas)
-            {
-                if (UnityEngine.SceneManagement.SceneManager.GetSceneByName(sceneData.Scene.Name).isLoaded)
-                    continue;
-                
-                await UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneData.Scene.Name, UnityEngine.SceneManagement.LoadSceneMode.Additive);
-                
-                if (sceneData.SetActive)
-                    UnityEngine.SceneManagement.SceneManager.SetActiveScene(sceneData.Scene.LoadedScene);
-            }
+            await UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
         }
 
-        private static async Task UnloadLeftOverScenes(List<SceneData> sceneDatas)
+        private static async Task LoadFirstSceneSingle(List<SceneData> sceneDatas)
         {
-            // Remove if there is any scene that shouldn't be loaded.
-            foreach (var sceneName in GetCurrentSceneNames())
+            await LoadScene(sceneDatas[0].Scene.Name, LoadSceneMode.Single);
+            sceneDatas.RemoveAt(0);
+        }
+        
+        private static async Task LoadScenes(SceneGroup sceneGroup)
+        {
+            List<string> currentSceneNames = GetCurrentSceneNames();
+            
+            foreach (var sceneData in sceneGroup.Scenes)
             {
-                if (sceneDatas.Find(x => x.Scene.Name == sceneName).Scene == null)
-                    await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(sceneName);
+                bool sceneActive = currentSceneNames.Contains(sceneData.Scene.Name);
+                if (sceneActive)
+                    continue;
+                
+                await LoadScene(sceneData.Scene.Name, LoadSceneMode.Additive);
+
+                if (sceneData.SetActive)
+                {
+                    Scene scene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(sceneData.Scene.Name);
+                    UnityEngine.SceneManagement.SceneManager.SetActiveScene(scene);
+                }
             }
         }
         
