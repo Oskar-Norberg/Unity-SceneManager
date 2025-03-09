@@ -8,6 +8,7 @@ namespace ringo.SceneSystem
     {
         private static bool _isSceneLoading = false;
         
+        // TODO: Implementing an event for loading progress. This would probably require importing my own event-bus to handle communication between scenes.
         public static async Task<bool> LoadSceneGroup(SceneGroup sceneGroup)
         {
             if (_isSceneLoading)
