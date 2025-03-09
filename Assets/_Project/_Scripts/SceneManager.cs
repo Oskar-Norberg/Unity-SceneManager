@@ -7,8 +7,13 @@ namespace ringo.SceneSystem
     public static class SceneManager
     {
         private static bool _isSceneLoading = false;
+
+        public delegate void OnSceneLoadingStartedEventHandler();
+        public static event OnSceneLoadingStartedEventHandler OnSceneLoadingStarted;
         
-        // TODO: Implementing an event for loading progress. This would probably require importing my own event-bus to handle communication between scenes.
+        public delegate void OnSceneLoadingFinishedEventHandler();
+        public static event OnSceneLoadingFinishedEventHandler OnSceneLoadingFinished;
+        
         public static async Task<bool> LoadSceneGroup(SceneGroup sceneGroup)
         {
             if (_isSceneLoading)
@@ -18,6 +23,7 @@ namespace ringo.SceneSystem
             }
             
             _isSceneLoading = true;
+            OnSceneLoadingStarted?.Invoke();
             
             List<SceneData> sceneDatas = new(sceneGroup.Scenes);
             
@@ -29,6 +35,7 @@ namespace ringo.SceneSystem
 
             _isSceneLoading = false;
             
+            OnSceneLoadingFinished?.Invoke();
             return true;
         }
 

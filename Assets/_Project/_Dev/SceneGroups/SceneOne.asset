@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Scenes:
   - Scene:
+      asset: {fileID: 102900000, guid: 4174dd8506549594abb058b293dc470b, type: 3}
+      guid: 4174dd8506549594abb058b293dc470b
+    SetActive: 0
+    ReloadIfActive: 0
+  - Scene:
       asset: {fileID: 102900000, guid: 4a9d230bcae8fab44bf734eb3d2c8774, type: 3}
       guid: 4a9d230bcae8fab44bf734eb3d2c8774
     SetActive: 0
