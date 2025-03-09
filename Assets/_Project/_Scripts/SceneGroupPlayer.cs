@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 namespace ringo.SceneSystem.Editor
@@ -81,8 +82,15 @@ namespace ringo.SceneSystem.Editor
                 Debug.LogWarning("Scene Group is null");
                 return;
             }
+            
+            LoadSceneGroup(sceneGroupToPlay);
+        }
 
-            SceneManager.LoadSceneGroup(sceneGroupToPlay);
+        private static async void LoadSceneGroup(SceneGroup sceneGroup)
+        {
+            await UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneGroup.Scenes[0].Scene.Name);
+            
+            await SceneManager.LoadSceneGroup(sceneGroup);
         }
 
         private static bool ShouldOverrideScene()
