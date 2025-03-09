@@ -7,34 +7,45 @@ namespace ringo.SceneSystem
     public static class SceneManager
     {
         // TODO: Lock function to prevent multiple calls at the same time.
+        // TODO: Return whether the operation is successful or not.
         public static async void LoadSceneGroup(SceneGroup sceneGroup)
         {
-            await UnloadScenes(sceneGroup);
-            await LoadScenesInGroup(sceneGroup);
+            List<SceneData> sceneDatas = new(sceneGroup.Scenes);
+            
+            bool leftOverScene = await UnloadScenes(sceneDatas);
+            await LoadScenesInGroup(sceneDatas);
+            
+            if (leftOverScene)
+                await UnloadLeftOverScenes(sceneDatas);
         }
 
-        private static async Task UnloadScenes(SceneGroup newSceneGroup)
+        /**
+         * <summary>Unloads scenes not in sceneData list.</summary>
+         * <returns>Returns whether there were any left-over scenes, because unity always needs to have at least one scene loaded at all times.</returns>
+         */
+        private static async Task<bool> UnloadScenes(List<SceneData> sceneDatas)
         {
             List<string> currentSceneNames = GetCurrentSceneNames();
             
             // loop through all old scenes, if it's not in the new scene list and not marked as ReloadIfActive, unload it
             foreach (var scene in currentSceneNames)
             {
-                var sceneData = newSceneGroup.Scenes.Find(x => x.Scene.Name == scene);
+                var sceneData = sceneDatas.Find(x => x.Scene.Name == scene);
 
                 if (UnityEngine.SceneManagement.SceneManager.sceneCount == 1)
-                    return;
+                    return true;
                 
                 if (sceneData.Scene == null || sceneData.ReloadIfActive)
                     await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(scene);
             }
+
+            return false;
         }
 
-        // TODO: Smelly function, refactor.
-        private static async Task LoadScenesInGroup(SceneGroup sceneGroup)
+        private static async Task LoadScenesInGroup(List<SceneData> sceneDatas)
         {
             // Load all scenes from SceneGroup
-            foreach (var sceneData in sceneGroup.Scenes)
+            foreach (var sceneData in sceneDatas)
             {
                 if (UnityEngine.SceneManagement.SceneManager.GetSceneByName(sceneData.Scene.Name).isLoaded)
                     continue;
@@ -44,11 +55,14 @@ namespace ringo.SceneSystem
                 if (sceneData.SetActive)
                     UnityEngine.SceneManagement.SceneManager.SetActiveScene(sceneData.Scene.LoadedScene);
             }
+        }
 
+        private static async Task UnloadLeftOverScenes(List<SceneData> sceneDatas)
+        {
             // Remove if there is any scene that shouldn't be loaded.
             foreach (var sceneName in GetCurrentSceneNames())
             {
-                if (sceneGroup.Scenes.Find(x => x.Scene.Name == sceneName).Scene == null)
+                if (sceneDatas.Find(x => x.Scene.Name == sceneName).Scene == null)
                     await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(sceneName);
             }
         }
