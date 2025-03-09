@@ -6,10 +6,19 @@ namespace ringo.SceneSystem
 {
     public static class SceneManager
     {
-        // TODO: Lock function to prevent multiple calls at the same time.
+        private static bool _isSceneLoading = false;
+        
         // TODO: Return whether the operation is successful or not.
         public static async void LoadSceneGroup(SceneGroup sceneGroup)
         {
+            if (_isSceneLoading)
+            {
+                Debug.LogWarning("Scene group is already loading!");
+                return;
+            }
+            
+            _isSceneLoading = true;
+            
             List<SceneData> sceneDatas = new(sceneGroup.Scenes);
             
             bool leftOverScene = await UnloadScenes(sceneDatas);
@@ -17,6 +26,8 @@ namespace ringo.SceneSystem
             
             if (leftOverScene)
                 await UnloadLeftOverScenes(sceneDatas);
+
+            _isSceneLoading = false;
         }
 
         /**
