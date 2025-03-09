@@ -8,13 +8,12 @@ namespace ringo.SceneSystem
     {
         private static bool _isSceneLoading = false;
         
-        // TODO: Return whether the operation is successful or not.
-        public static async void LoadSceneGroup(SceneGroup sceneGroup)
+        public static async Task<bool> LoadSceneGroup(SceneGroup sceneGroup)
         {
             if (_isSceneLoading)
             {
                 Debug.LogWarning("Scene group is already loading!");
-                return;
+                return false;
             }
             
             _isSceneLoading = true;
@@ -28,6 +27,8 @@ namespace ringo.SceneSystem
                 await UnloadLeftOverScenes(sceneDatas);
 
             _isSceneLoading = false;
+            
+            return true;
         }
 
         /**
