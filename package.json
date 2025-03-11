@@ -1,0 +1,27 @@
+{
+  "name": "com.ringo.scene-manager",
+  "version": "1.0.0",
+  "displayName": "Scene Manager",
+  "description": "Package for asynchronous, additive scene manager. Supports loading multiple scenes at the same time through scene groups..",
+  
+  "unity": "6000.0",
+  "unityRelease": "34f1",
+  
+  "keywords": [
+    "Scene Manager",
+    "Additive",
+    "Asynchronous"
+  ],
+  
+  "dependencies": {
+    "com.unity.settings-manager": "2.0.1",
+    "com.unity.nuget.newtonsoft-json": "3.0.2"
+  },
+  
+  "author": {
+    "name": "Oskar Norberg",
+    "url": "https://github.com/Oskar-Norberg"
+  },
+
+  "licensesUrl": "https://www.gnu.org/licenses/gpl-3.0.en.html"
+}
