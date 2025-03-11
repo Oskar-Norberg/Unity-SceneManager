@@ -17,6 +17,14 @@
     "com.unity.settings-manager": "2.0.1",
     "com.unity.nuget.newtonsoft-json": "3.0.2"
   },
+
+  "samples": [
+    {
+      "displayName": "Example Scenes",
+      "description": "Contains basic setup with a gameplay, ui and level scene.",
+      "path": "Samples~/Scenes"
+    }
+  ],
   
   "author": {
     "name": "Oskar Norberg",
