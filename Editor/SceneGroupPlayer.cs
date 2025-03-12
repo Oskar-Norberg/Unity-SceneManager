@@ -61,7 +61,7 @@ namespace ringo.SceneSystem.Editor
             EditorApplication.EnterPlaymode();
         }
         
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void OnBeforeSceneLoadRuntimeMethod()
         {
             if (!ShouldOverrideScene())
