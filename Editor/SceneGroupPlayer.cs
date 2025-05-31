@@ -1,13 +1,11 @@
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-
 
 namespace ringo.SceneSystem.Editor
 {
     public class SceneGroupPlayer : EditorWindow
     {
-        private SceneGroup _sceneGroupToPlay;
+        private SceneGroupSO _sceneGroupToPlay;
         
         [MenuItem("Testing/Scene Group Player")]
         public static void ShowWindow()
@@ -30,7 +28,7 @@ namespace ringo.SceneSystem.Editor
         {
             EditorGUILayout.BeginHorizontal();
             
-            _sceneGroupToPlay = (SceneGroup) EditorGUILayout.ObjectField("Scene Group", _sceneGroupToPlay, typeof(SceneGroup), false);
+            _sceneGroupToPlay = (SceneGroupSO) EditorGUILayout.ObjectField("Scene Group", _sceneGroupToPlay, typeof(SceneGroupSO), false);
             EditorPrefs.SetString("SceneGroupToPlay", AssetDatabase.GetAssetPath(_sceneGroupToPlay));
             
             EditorGUILayout.EndHorizontal();
@@ -70,11 +68,11 @@ namespace ringo.SceneSystem.Editor
             SetShouldOverrideScene(false);
             
             var sceneGroupPath = EditorPrefs.GetString("SceneGroupToPlay", string.Empty);
-            var sceneGroupToPlay = default(SceneGroup);
+            var sceneGroupToPlay = default(SceneGroupSO);
             
             if (!string.IsNullOrEmpty(sceneGroupPath))
             {
-                sceneGroupToPlay = AssetDatabase.LoadAssetAtPath<SceneGroup>(sceneGroupPath);
+                sceneGroupToPlay = AssetDatabase.LoadAssetAtPath<SceneGroupSO>(sceneGroupPath);
             }
             
             if (sceneGroupToPlay == null)
@@ -86,7 +84,7 @@ namespace ringo.SceneSystem.Editor
             LoadSceneGroup(sceneGroupToPlay);
         }
 
-        private static async void LoadSceneGroup(SceneGroup sceneGroup)
+        private static async void LoadSceneGroup(SceneGroupSO sceneGroup)
         {
             await SceneManager.LoadSceneGroup(sceneGroup);
         }

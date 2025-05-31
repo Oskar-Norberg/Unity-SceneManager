@@ -19,6 +19,17 @@ namespace ringo.SceneSystem
         
         private static SceneGroup _currentSceneGroup;
         
+        public static async Task<bool> LoadSceneGroup(SceneGroupSO sceneGroupSO)
+        {
+            if (sceneGroupSO == null)
+            {
+                Debug.LogError("SceneGroupSO is null!");
+                return false;
+            }
+            
+            return await LoadSceneGroup(sceneGroupSO.SceneGroup);
+        }
+        
         public static async Task<bool> LoadSceneGroup(SceneGroup sceneGroup)
         {
             if (_isSceneLoading)
