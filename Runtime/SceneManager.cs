@@ -7,6 +7,8 @@ namespace ringo.SceneSystem
 {
     public static class SceneManager
     {
+        public static SceneGroup CurrentSceneGroup => _currentSceneGroup;
+        
         private static bool _isSceneLoading = false;
 
         public delegate void OnSceneLoadingStartedEventHandler();
@@ -14,6 +16,8 @@ namespace ringo.SceneSystem
         
         public delegate void OnSceneLoadingFinishedEventHandler();
         public static event OnSceneLoadingFinishedEventHandler OnSceneLoadingFinished;
+        
+        private static SceneGroup _currentSceneGroup;
         
         public static async Task<bool> LoadSceneGroup(SceneGroup sceneGroup)
         {
@@ -23,6 +27,7 @@ namespace ringo.SceneSystem
                 return false;
             }
             
+            _currentSceneGroup = sceneGroup;
             _isSceneLoading = true;
             OnSceneLoadingStarted?.Invoke();
             
