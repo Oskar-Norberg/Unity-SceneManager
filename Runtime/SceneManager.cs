@@ -68,9 +68,19 @@ namespace ringo.SceneSystem
             foreach (var sceneName in currentSceneNames)
             {
                 var sceneData = sceneDatas.Find(sd => sd.Scene.Name == sceneName);
-                
+
                 if (UnityEngine.SceneManagement.SceneManager.sceneCount == 1)
-                    return true;
+                {
+                    // Slightly hacky way to check if scene data was found.
+                    if (sceneData.Scene != null)
+                    {
+                        return sceneData.ReloadIfActive;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
 
                 if (sceneData.Scene == null)
                     await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(sceneName);
