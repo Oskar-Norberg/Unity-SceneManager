@@ -8,17 +8,17 @@ namespace ringo.SceneSystem
     public static class SceneManager
     {
         public static SceneGroup CurrentSceneGroup => _currentSceneGroup;
-        
+
         private static bool _isSceneLoading = false;
 
         public delegate void OnSceneLoadingStartedEventHandler();
         public static event OnSceneLoadingStartedEventHandler OnSceneLoadingStarted;
-        
+
         public delegate void OnSceneLoadingFinishedEventHandler();
         public static event OnSceneLoadingFinishedEventHandler OnSceneLoadingFinished;
-        
+
         private static SceneGroup _currentSceneGroup;
-        
+
         public static async Task<bool> LoadSceneGroup(SceneGroupSO sceneGroupSO)
         {
             if (sceneGroupSO == null)
@@ -26,10 +26,10 @@ namespace ringo.SceneSystem
                 Debug.LogError("SceneGroupSO is null!");
                 return false;
             }
-            
+
             return await LoadSceneGroup(sceneGroupSO.SceneGroup);
         }
-        
+
         public static async Task<bool> LoadSceneGroup(SceneGroup sceneGroup)
         {
             if (_isSceneLoading)
@@ -37,22 +37,23 @@ namespace ringo.SceneSystem
                 Debug.LogWarning("Scene group is already loading!");
                 return false;
             }
-            
+
             _currentSceneGroup = sceneGroup;
             _isSceneLoading = true;
             OnSceneLoadingStarted?.Invoke();
-            
+
             List<SceneData> sceneDatas = new(sceneGroup.Scenes);
-            
+
             bool leftOverScene = await UnloadScenes(sceneDatas);
-            
+
             if (leftOverScene)
                 await LoadFirstSceneSingle(sceneDatas);
 
             await LoadScenes(sceneGroup);
-            
+            SetCorrectActiveScene(sceneGroup);
+
             _isSceneLoading = false;
-            
+
             OnSceneLoadingFinished?.Invoke();
             return true;
         }
@@ -90,7 +91,7 @@ namespace ringo.SceneSystem
 
             return false;
         }
-        
+
         private static async Task LoadScene(string sceneName, LoadSceneMode loadSceneMode)
         {
             await UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
@@ -101,27 +102,43 @@ namespace ringo.SceneSystem
             await LoadScene(sceneDatas[0].Scene.Name, LoadSceneMode.Single);
             sceneDatas.RemoveAt(0);
         }
-        
+
         private static async Task LoadScenes(SceneGroup sceneGroup)
         {
             List<string> currentSceneNames = GetCurrentSceneNames();
-            
+
             foreach (var sceneData in sceneGroup.Scenes)
             {
                 bool sceneActive = currentSceneNames.Contains(sceneData.Scene.Name);
                 if (sceneActive)
                     continue;
-                
-                await LoadScene(sceneData.Scene.Name, LoadSceneMode.Additive);
 
-                if (sceneData.SetActive)
-                {
-                    Scene scene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(sceneData.Scene.Name);
-                    UnityEngine.SceneManagement.SceneManager.SetActiveScene(scene);
-                }
+                await LoadScene(sceneData.Scene.Name, LoadSceneMode.Additive);
             }
         }
-        
+
+        private static void SetCorrectActiveScene(SceneGroup sceneGroup)
+        {
+            var newActiveScene = sceneGroup.Scenes.Find(sd => sd.SetActive);
+
+            if (newActiveScene.Scene != null)
+            {
+                var scene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(newActiveScene.Scene.Name);
+                
+                if (!scene.IsValid())
+                {
+                    Debug.LogError($"Scene {newActiveScene.Scene.Name} is not valid or not loaded!");
+                    return;
+                }
+                
+                UnityEngine.SceneManagement.SceneManager.SetActiveScene(scene);
+            }
+            else
+            {
+                Debug.LogError("No scene has been marked as active in the scene group!");
+            }
+        }
+
         private static List<string> GetCurrentSceneNames()
         {
             List<string> sceneNames = new List<string>();
